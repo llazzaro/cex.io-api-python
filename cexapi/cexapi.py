@@ -8,7 +8,10 @@ import hmac
 import hashlib
 import time
 import urllib
-import urllib2
+try:
+    import urllib.request as urllib2
+except ImportError:
+    import urllib2
 import json
 
 
