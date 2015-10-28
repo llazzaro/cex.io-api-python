@@ -7,11 +7,14 @@
 import hmac
 import hashlib
 import time
-import urllib
 try:
     import urllib.request as urllib2
 except ImportError:
     import urllib2
+try:
+    from urllib.parse import urlencode
+except ImportError:
+    from urllib import urlencode
 import json
 
 
@@ -38,7 +41,7 @@ class API(object):
         return signature
 
     def __post(self, url, param):  # Post Request (Low Level API call)
-        params = urllib.urlencode(param)
+        params = urlencode(param)
         req = urllib2.Request(url, params, {'User-agent': 'bot-cex.io-' + self.__username})
         page = urllib2.urlopen(req).read()
         return page
