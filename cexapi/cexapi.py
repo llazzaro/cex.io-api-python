@@ -19,16 +19,16 @@ import json
 
 
 class API(object):
-    __username = ''
-    __api_key = ''
-    __api_secret = ''
+    username = ''
+    api_key = ''
+    api_secret = ''
     __nonce_v = ''
 
     # Init class
     def __init__(self, username, api_key, api_secret):
-        self.__username = username
-        self.__api_key = api_key
-        self.__api_secret = api_secret
+        self.username = username
+        self.api_key = api_key
+        self.api_secret = api_secret
 
     # get timestamp as nonce
     def __nonce(self):
@@ -36,13 +36,14 @@ class API(object):
 
     # generate segnature
     def __signature(self):
-        string = self.__nonce_v + self.__username + self.__api_key  # create string
-        signature = hmac.new(self.__api_secret, string, digestmod=hashlib.sha256).hexdigest().upper()  # create signature
+        string = self.__nonce_v + self.username + self.api_key  # create string
+        signature = hmac.new(self.api_secret, string, digestmod=hashlib.sha256).hexdigest().upper()  # create signature
         return signature
 
     def __post(self, url, param):  # Post Request (Low Level API call)
         params = urlencode(param)
-        req = urllib2.Request(url, params, {'User-agent': 'bot-cex.io-' + self.__username})
+        params = params.encode('utf-8')
+        req = urllib2.Request(url, params, {'User-agent': 'bot-cex.io-' + self.username})
         page = urllib2.urlopen(req).read()
         return page
 
@@ -53,11 +54,11 @@ class API(object):
         if private == 1:  # add auth-data if needed
             self.__nonce()
             param.update({
-                'key': self.__api_key,
+                'key': self.api_key,
                 'signature': self.__signature(),
                 'nonce': self.__nonce_v})
         answer = self.__post(url, param)  # Post Request
-        return json.loads(answer)  # generate dict and return
+        return json.loads(answer.decode('utf-8'))  # generate dict and return
 
     def ticker(self, couple='GHS/BTC'):
         return self.api_call('ticker', {}, 0, couple)
